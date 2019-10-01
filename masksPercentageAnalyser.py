@@ -4,17 +4,21 @@ import os
 import matplotlib.pyplot as plt
 import pandas as pd
 
-'''
-data= { 'ID' : [,,,,,,,,,,,],
-        'Tumor': [ 250428, 19925, 20235, 187796, 279172, 165729, 215407, 76208, 46921, 148481, 229936, 7154],
-        'Stroma' : [ 0, 29348, 2054, 67738, 15313, 17543, 53515, 1536, 30120, 12166, 24220, 27614],
-        'Immune' : [110984, 74098, 27356, 37212, 63876, 19478,17776, 6501, 4560, 11614, 49521, 12557],
-        'Others' : [ 8123, 3029, 0, 1092, 3401, 695, 0, 188, 14759, 2966, 5375, 0]},
-'''
 
-#annotation_dataframe= pd.DataFrame(data)
+data= {
+        'Tumor': [ 250428, 19925, 20235, 187796, 279172, 165729, 215407, 76208, 46921, 148481, 229936, 7154, 3544, 205512, 0, 104321, 0, 66347, 8626, 53248, 279228, 33979, 4117, 96326, 130163],
+        'Stroma' : [ 0, 29348, 2054, 67738, 15313, 17543, 53515, 1536, 30120, 12166, 24220, 27614, 6426, 4160, 43978, 18438, 6690, 29480, 5593, 16441, 21786, 5387, 5122,37850, 9801],
+        'Immune' : [110984, 74098, 27356, 37212, 63876, 19478,17776, 6501, 4560, 11614, 49521, 12187, 50400, 55945, 61929,4542, 35259, 42900, 135778, 16659, 9057, 60479, 335474, 43014],
+        'Others' : [ 8123, 3029, 0, 1092, 3401, 695, 0, 188, 14759, 2966, 5375, 0, 2806, 7703, 6128, 0, 2224, 34272, 0, 22289, 2295, 2434, 1620, 23007, 0]},
+
+
+resultsExcel = {}
+#df_resultXsl = pd.DataFrame(columns=[ 'Tumor' , 'Stroma' , 'Immune' , 'Others' , 'ID' , 'TumorArea' , 'StromaArea' , 'ImmuneArea' , 'OthersArea'])
+df_resultXsl = pd.DataFrame(columns=[  'ID' , 'TumorArea' , 'StromaArea' , 'ImmuneArea' , 'OthersArea'])
+
+annotation_dataframe= pd.DataFrame(data)
 indexDataFrame = -1
-maskDirPath = '/home/maorvelous/Documents/Lab/deepLearning/MaskLou/'
+maskDirPath = '/home/marco/Documents/Lab/deepLearning/MaskLou/'
 
 idSample = 000000
 entries = os.listdir(maskDirPath)
@@ -44,7 +48,7 @@ def countWhiteOnMask(entry, type):
 
     if type == "Others":
         averageCell = n_white_pix / annotation_dataframe.iloc[0][3][indexDataFrame]
-
+    
     print( " Average white pixel for annotations ", type,": " , averageCell  )
     '''
     percentage = n_white_pix / (total_of_pixels / 100)
@@ -55,23 +59,39 @@ def countWhiteOnMask(entry, type):
 
     print(" Number of annotated Regions of ",type, ": ", len(contours))
 
+    return n_white_pix
+
 for entry in sorted(entries):
+
+    Immune_n_white_pix = 0
+    Tumor_n_white_pix = 0
+    Stroma_n_white_pix = 0
+    Others_n_white_pix = 0
 
     if "Immune" in entry :
 
         indexDataFrame = indexDataFrame + 1
+
         print("Index of the data frame : ", indexDataFrame)
         id = entry.replace("Immune cells_mask.png","")
-        countWhiteOnMask(entry, 'Immune cells')
+        Immune_n_white_pix = countWhiteOnMask(entry, 'Immune cells')
         tumorFileName = entry.replace('Immune cells', 'Tumor')
-        countWhiteOnMask(tumorFileName, 'Tumor')
+        Tumor_n_white_pix = countWhiteOnMask(tumorFileName, 'Tumor')
 
         stromaFileName = entry.replace('Immune cells', 'Stroma')
 
         if os.path.isfile(maskDirPath + stromaFileName):
-            countWhiteOnMask(stromaFileName, 'Stroma')
+            Stroma_n_white_pix = countWhiteOnMask(stromaFileName, 'Stroma')
 
         othersFileName = entry.replace('Immune cells', 'Other')
 
         if os.path.isfile(maskDirPath + othersFileName):
-            countWhiteOnMask(othersFileName, 'Others')
+            Others_n_white_pix = countWhiteOnMask(othersFileName, 'Others')
+
+        df_resultXsl.loc[indexDataFrame] = [entry, Immune_n_white_pix,
+                                            Tumor_n_white_pix, Stroma_n_white_pix, Others_n_white_pix]
+
+        #df_resultXsl.loc[indexDataFrame] =  [ annotation_dataframe.iloc[0][0][indexDataFrame], annotation_dataframe.iloc[0][1][indexDataFrame], annotation_dataframe.iloc[0][2][indexDataFrame], annotation_dataframe.iloc[0][3][indexDataFrame], entry, Immune_n_white_pix, Tumor_n_white_pix, Stroma_n_white_pix, Others_n_white_pix ]
+
+print(df_resultXsl)
+df_resultXsl.to_excel("output.xlsx")
