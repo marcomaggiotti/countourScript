@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 import pandas as pd
 
 
-data= {
+data= { 'ID' : [ 'BRCA03', 'BRCA04', 'BRCA05', 'BRCA06', 'BRCA09', 'BRCA16', 'BRCA37', 'BRCA40', 'BRCA46', 'BRCA47', 'BRCA58', 'BRCA59', 'BRCA60', 'BRCA62', 'BRCA64', 'BRCA65',  'BRCA67', 'BRCA70', 'BRCA71', 'BRCA72', 'BRCA80', 'BRCA82', 'BRCA87','BRCA89'],
         'Tumor': [ 250428, 19925, 20235, 187796, 279172, 165729, 215407, 76208, 46921, 148481, 229936, 7154, 3544, 205512, 0, 104321, 0, 66347, 8626, 53248, 279228, 33979, 4117, 96326, 130163],
         'Stroma' : [ 0, 29348, 2054, 67738, 15313, 17543, 53515, 1536, 30120, 12166, 24220, 27614, 6426, 4160, 43978, 18438, 6690, 29480, 5593, 16441, 21786, 5387, 5122,37850, 9801],
         'Immune' : [110984, 74098, 27356, 37212, 63876, 19478,17776, 6501, 4560, 11614, 49521, 12187, 50400, 55945, 61929,4542, 35259, 42900, 135778, 16659, 9057, 60479, 335474, 43014],
@@ -13,12 +13,12 @@ data= {
 
 
 resultsExcel = {}
-#df_resultXsl = pd.DataFrame(columns=[ 'Tumor' , 'Stroma' , 'Immune' , 'Others' , 'ID' , 'TumorArea' , 'StromaArea' , 'ImmuneArea' , 'OthersArea'])
-df_resultXsl = pd.DataFrame(columns=[  'ID' , 'TumorArea' , 'StromaArea' , 'ImmuneArea' , 'OthersArea'])
+df_resultXsl = pd.DataFrame(columns=[ 'ID', 'Tumor' , 'Stroma' , 'Immune' , 'Others' , 'FileName' , 'TumorArea' , 'StromaArea' , 'ImmuneArea' , 'OthersArea'])
+#df_resultXsl = pd.DataFrame(columns=[  'ID' , 'TumorArea' , 'StromaArea' , 'ImmuneArea' , 'OthersArea'])
 
 annotation_dataframe= pd.DataFrame(data)
 indexDataFrame = -1
-maskDirPath = '/home/marco/Documents/Lab/deepLearning/MaskLou/'
+maskDirPath = '/home/maorvelous/Documents/Lab/deepLearning/MaskLou/'
 
 idSample = 000000
 entries = os.listdir(maskDirPath)
@@ -88,10 +88,10 @@ for entry in sorted(entries):
         if os.path.isfile(maskDirPath + othersFileName):
             Others_n_white_pix = countWhiteOnMask(othersFileName, 'Others')
 
-        df_resultXsl.loc[indexDataFrame] = [entry, Immune_n_white_pix,
-                                            Tumor_n_white_pix, Stroma_n_white_pix, Others_n_white_pix]
+        #df_resultXsl.loc[indexDataFrame] = [entry, Immune_n_white_pix, Tumor_n_white_pix, Stroma_n_white_pix, Others_n_white_pix]
+        print(indexDataFrame)
 
-        #df_resultXsl.loc[indexDataFrame] =  [ annotation_dataframe.iloc[0][0][indexDataFrame], annotation_dataframe.iloc[0][1][indexDataFrame], annotation_dataframe.iloc[0][2][indexDataFrame], annotation_dataframe.iloc[0][3][indexDataFrame], entry, Immune_n_white_pix, Tumor_n_white_pix, Stroma_n_white_pix, Others_n_white_pix ]
+        df_resultXsl.loc[indexDataFrame] =  [ annotation_dataframe.iloc[0][0][indexDataFrame], annotation_dataframe.iloc[0][1][indexDataFrame], annotation_dataframe.iloc[0][2][indexDataFrame], annotation_dataframe.iloc[0][3][indexDataFrame], annotation_dataframe.iloc[0][4][indexDataFrame], entry, Immune_n_white_pix, Tumor_n_white_pix, Stroma_n_white_pix, Others_n_white_pix ]
 
 print(df_resultXsl)
 df_resultXsl.to_excel("output.xlsx")
