@@ -13,7 +13,7 @@ data= { 'ID' : [ 'BRCA03', 'BRCA04', 'BRCA05', 'BRCA06', 'BRCA09', 'BRCA16', 'BR
 
 
 resultsExcel = {}
-df_resultXsl = pd.DataFrame(columns=[ 'ID', 'Tumor' , 'Stroma' , 'Immune' , 'Others' , 'FileName' , 'TumorArea' , 'StromaArea' , 'ImmuneArea' , 'OthersArea'])
+df_resultXsl = pd.DataFrame(columns=[ 'ID', 'Tumor' , 'Stroma' , 'Immune' , 'Others' , 'FileName' , 'ImmuneArea', 'ImmuneAvgAnnotations','TumorArea' ,'TumorAvgAnnotations', 'StromaArea' , 'StromaAvgAnnotations',  'OthersArea', 'OthersAvgAnnotations'])
 #df_resultXsl = pd.DataFrame(columns=[  'ID' , 'TumorArea' , 'StromaArea' , 'ImmuneArea' , 'OthersArea'])
 
 annotation_dataframe= pd.DataFrame(data)
@@ -34,23 +34,23 @@ def countWhiteOnMask(entry, type):
     print(entry)
     n_white_pix = np.sum(mask_Immune == annotatedColor)
     print("Number of white pixels of ", type,":", n_white_pix)
-    '''
+
     if type == "Immune cells":
-        #print("dataFrame Immune cell ",annotation_dataframe.iloc[0][0][indexDataFrame] )
-        averageCell = n_white_pix / annotation_dataframe.iloc[0][0][indexDataFrame]
+        print("dataFrame Immune cell ",annotation_dataframe.iloc[0][3][indexDataFrame] )
+        averageCell = n_white_pix / annotation_dataframe.iloc[0][3][indexDataFrame]
 
     if type == "Tumor":
-        #print("dataFrame Immune cell ", annotation_dataframe.iloc[0][1][indexDataFrame])
+        print("dataFrame Immune cell ", annotation_dataframe.iloc[0][1][indexDataFrame])
         averageCell = n_white_pix / annotation_dataframe.iloc[0][1][indexDataFrame]
 
     if type == "Stroma":
         averageCell = n_white_pix / annotation_dataframe.iloc[0][2][indexDataFrame]
 
     if type == "Others":
-        averageCell = n_white_pix / annotation_dataframe.iloc[0][3][indexDataFrame]
+        averageCell = n_white_pix / annotation_dataframe.iloc[0][4][indexDataFrame]
     
     print( " Average white pixel for annotations ", type,": " , averageCell  )
-    '''
+
     percentage = n_white_pix / (total_of_pixels / 100)
     print(" Percentage number of Pixels : ", percentage)
 
@@ -90,8 +90,11 @@ for entry in sorted(entries):
 
         #df_resultXsl.loc[indexDataFrame] = [entry, Immune_n_white_pix, Tumor_n_white_pix, Stroma_n_white_pix, Others_n_white_pix]
         print(indexDataFrame)
-
-        df_resultXsl.loc[indexDataFrame] =  [ annotation_dataframe.iloc[0][0][indexDataFrame], annotation_dataframe.iloc[0][1][indexDataFrame], annotation_dataframe.iloc[0][2][indexDataFrame], annotation_dataframe.iloc[0][3][indexDataFrame], annotation_dataframe.iloc[0][4][indexDataFrame], entry, Immune_n_white_pix, Tumor_n_white_pix, Stroma_n_white_pix, Others_n_white_pix ]
+        avgTumorAnnotations = Tumor_n_white_pix / annotation_dataframe.iloc[0][1][indexDataFrame]
+        avgImmuneAnnotations = Immune_n_white_pix / annotation_dataframe.iloc[0][3][indexDataFrame]
+        avgStromaAnnotations = Stroma_n_white_pix / annotation_dataframe.iloc[0][2][indexDataFrame] if annotation_dataframe.iloc[0][2][indexDataFrame] != 0 else  0
+        avgOthersAnnotations = Others_n_white_pix / annotation_dataframe.iloc[0][4][indexDataFrame] if annotation_dataframe.iloc[0][4][indexDataFrame] != 0 else  0
+        df_resultXsl.loc[indexDataFrame] =  [ annotation_dataframe.iloc[0][0][indexDataFrame], annotation_dataframe.iloc[0][1][indexDataFrame], annotation_dataframe.iloc[0][2][indexDataFrame], annotation_dataframe.iloc[0][3][indexDataFrame], annotation_dataframe.iloc[0][4][indexDataFrame], entry, Immune_n_white_pix, avgImmuneAnnotations, Tumor_n_white_pix, avgTumorAnnotations, Stroma_n_white_pix, avgStromaAnnotations,  Others_n_white_pix , avgOthersAnnotations ]
 
 print(df_resultXsl)
 df_resultXsl.to_excel("output.xlsx")
