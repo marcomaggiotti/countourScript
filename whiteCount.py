@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 import pandas as pd
 
 
-entries = os.listdir('/home/marco/Documents/Lab/deepLearning/MaskLou/')
+entries = os.listdir('/home/maorvelous/Documents/Lab/deepLearning/MaskLou/')
 dataframes = []
 for entry in entries[0:4]:
     print(entry)
